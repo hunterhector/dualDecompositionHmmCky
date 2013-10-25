@@ -22,7 +22,7 @@ import com.google.common.collect.Table;
  * 
  * Tabs are delimiters, additional inside splits should be done by single space
  * 
- * @author hector
+ * @author Zhengzhong Liu, Hector
  * 
  */
 public class ModelReader {
@@ -50,11 +50,11 @@ public class ModelReader {
 
 	public static void main(String[] args) throws IOException {
 		Table<String, String, Double> pcfgDist = ModelReader.fromFile(new File(
-				"data/hw3/pcfg"));
+				"data/hw3-v1.1/pcfg"));
 		Table<String, String, Double> hmmEmi = ModelReader.fromFile(new File(
-				"data/hw3/hmm_emits"));
+				"data/hw3-v1.1/hmm_emits"));
 		Table<String, String, Double> hmmTrans = ModelReader
-				.fromFile(new File("data/hw3/hmm_trans"));
+				.fromFile(new File("data/hw3-v1.1/hmm_trans"));
 		System.out.println(String.format("%d pcfg distribution entires read",
 				pcfgDist.size()));
 		System.out.println(String.format("%d hmm emission entries read",
