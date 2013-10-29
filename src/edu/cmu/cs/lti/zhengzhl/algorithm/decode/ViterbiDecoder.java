@@ -12,20 +12,16 @@ package edu.cmu.cs.lti.zhengzhl.algorithm.decode;
  * 
  */
 public abstract class ViterbiDecoder {
-	public String[] decode(String[] observations, String[] stateSet,
-			double[] langrangian) {
+	public String[] decode(String[] observations, String[] stateSet, double[] langrangian) {
 		double[][] lattice = new double[observations.length][stateSet.length];
 		int[][] backPointers = new int[observations.length][stateSet.length];
 
 		viterbi(observations, stateSet, lattice, backPointers, langrangian);
 
-		double[] lastColumn = lattice[lattice.length - 1];
-
 		return recover(lattice, backPointers, stateSet);
 	}
 
-	private String[] recover(double[][] lattice, int[][] backPointers,
-			String[] stateSet) {
+	private String[] recover(double[][] lattice, int[][] backPointers, String[] stateSet) {
 
 		int sentLength = lattice.length;
 
@@ -60,8 +56,7 @@ public abstract class ViterbiDecoder {
 		return seq;
 	}
 
-	private void viterbi(String[] observations, String[] stateSet,
-			double[][] lattice, int[][] backPointers, double[] langrangian) {
+	private void viterbi(String[] observations, String[] stateSet, double[][] lattice, int[][] backPointers, double[] langrangian) {
 		// decode from left to right
 		for (int col = 0; col < observations.length; col++) {
 			// consider each possible state for this column
@@ -69,8 +64,7 @@ public abstract class ViterbiDecoder {
 				String currentState = stateSet[stateIndex];
 				if (col == 0) {
 					// special case for the first column
-					lattice[col][stateIndex] = getScore(observations, col,
-							null, currentState, langrangian);
+					lattice[col][stateIndex] = getScore(observations, col, null, currentState, langrangian);
 				} else {
 					// aggregate each possible previous state using MAX
 					double maxScore = 0;
@@ -79,9 +73,7 @@ public abstract class ViterbiDecoder {
 
 					for (int previousStateIndex = 0; previousStateIndex < stateSet.length; previousStateIndex++) {
 						double previousMax = lattice[col - 1][previousStateIndex];
-						double currentScore = getScore(observations, col,
-								stateSet[previousStateIndex], currentState,
-								langrangian);
+						double currentScore = getScore(observations, col, stateSet[previousStateIndex], currentState, langrangian);
 
 						double sequenceScore = currentScore + previousMax;
 
@@ -99,12 +91,9 @@ public abstract class ViterbiDecoder {
 		}
 	}
 
-	private double getScore(String[] observations, int index,
-			String previousState, String currentState, double[] langrangian) {
-		return getScore(observations, index, previousState, currentState)
-				- langrangian[index];
+	private double getScore(String[] observations, int index, String previousState, String currentState, double[] langrangian) {
+		return getScore(observations, index, previousState, currentState) - langrangian[index];
 	}
 
-	protected abstract double getScore(String[] observations, int index,
-			String previousState, String currentState);
+	protected abstract double getScore(String[] observations, int index, String previousState, String currentState);
 }
