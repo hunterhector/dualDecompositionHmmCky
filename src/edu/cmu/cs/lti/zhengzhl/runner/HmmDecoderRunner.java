@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import com.google.common.collect.Table;
 
 import edu.cmu.cs.lti.zhengzhl.algorithm.decode.HmmDecoder;
 import edu.cmu.cs.lti.zhengzhl.io.ModelReader;
+import edu.cmu.cs.lti.zhengzhl.io.ResultWriter;
 
 /**
  * @author Zhengzhong Liu, Hector
@@ -31,6 +33,8 @@ public class HmmDecoderRunner {
 		File emitFile = new File("data/hw3-v1.1/hmm_emits");
 		File transFile = new File("data/hw3-v1.1/hmm_trans");
 		File inputFile = new File("data/hw3-v1.1/dev_sents");
+
+		PrintWriter writer = new PrintWriter("data/hw3-v1.2/hmm_tags.txt");
 
 		Table<String, String, Double> logpEmit = ModelReader.fromFile(emitFile);
 		Table<String, String, Double> logpTrans = ModelReader
@@ -53,13 +57,22 @@ public class HmmDecoderRunner {
 				states.length));
 
 		for (String line : getLines(inputFile)) {
-			System.out.println(line);
-			String[] tagSeq = hmmDecoder.decode(line.split(" "), states);
-			for (int i = 0; i < tagSeq.length; i++) {
-				System.out.print(tagSeq[i] + " ");
-			}
-			System.out.println();
+			String[] tokens = line.split(" ");
+			double[] langrangian = new double[tokens.length];
+
+			String[] tagSeq = hmmDecoder.decode(tokens, states, langrangian);
+			// System.out.println(line);
+			// for (int i = 0; i < tagSeq.length; i++) {
+			// System.out.print(tagSeq[i]);
+			// if (i < tagSeq.length - 1) {
+			// System.out.print(" ");
+			// }
+			// }
+
+			ResultWriter.writeTags(tagSeq, writer);
 		}
+
+		writer.close();
 
 	}
 

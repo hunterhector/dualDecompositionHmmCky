@@ -10,6 +10,8 @@ import com.google.common.collect.Table;
  * 
  */
 public class HmmDecoder extends ViterbiDecoder {
+	double smallProb = -1000;
+
 	Table<String, String, Double> logpEmit;
 	Table<String, String, Double> logpTrans;
 
@@ -29,20 +31,20 @@ public class HmmDecoder extends ViterbiDecoder {
 			String previousState, String currentState) {
 		String emitSymbol = observations[index];
 
-		// no logp are negative 0 is not a good starting points
-		double emitLogp = 0;
+		double emitLogp = smallProb;
 		if (logpEmit.contains(currentState, emitSymbol)) {
 			emitLogp = logpEmit.get(currentState, emitSymbol);
-		}
 
-		// no logp are negative 0 is not a good starting points
-		double transLogp = 0;
-		if (logpTrans.contains(previousState, currentState)) {
-			transLogp = logpTrans.get(previousState, currentState);
 		}
 
 		if (previousState == null) {
-			return transLogp;
+			return emitLogp;
+		}
+
+		double transLogp = smallProb;
+
+		if (logpTrans.contains(previousState, currentState)) {
+			transLogp = logpTrans.get(previousState, currentState);
 		}
 
 		return emitLogp + transLogp;
