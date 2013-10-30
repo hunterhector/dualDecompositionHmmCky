@@ -13,25 +13,25 @@ import java.util.Map;
  * 
  */
 public class Lagrangian {
-	private static List<Map<String, Double>> langrangian;
+	private static List<Map<String, Double>> lagrangian;
 
 	public static void initialize(int length) {
-		langrangian = new ArrayList<Map<String, Double>>(length);
+		lagrangian = new ArrayList<Map<String, Double>>(length);
 		for (int i = 0; i < length; i++) {
-			langrangian.add(new HashMap<String, Double>());
+			lagrangian.add(new HashMap<String, Double>());
 		}
 	}
 
-	public static double getLangrangian(int i, String t) {
-		if (langrangian.get(i).containsKey(t)) {
-			return langrangian.get(i).get(t);
+	public static double getLagrangian(int i, String t) {
+		if (lagrangian.get(i).containsKey(t)) {
+			return lagrangian.get(i).get(t);
 		} else {
 			return 0;
 		}
 	}
 
-	public static void setLangrangian(int i, String t, double score) {
-		langrangian.get(i).put(t, score);
+	public static void setLagrangian(int i, String t, double score) {
+		lagrangian.get(i).put(t, score);
 	}
 
 }

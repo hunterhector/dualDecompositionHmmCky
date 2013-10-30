@@ -33,7 +33,7 @@ public class DualDecompositionHmmCky {
 
 	public DualDecompositionHmmCky(Table<String, String, Double> logpEmit, Table<String, String, Double> logpTrans,
 			Table<String, String, Double> pcfgRules) {
-		hmmDecoder = new HmmDecoder(logpEmit, logpTrans);
+		hmmDecoder = new HmmDecoder(logpEmit, logpTrans, "sentence_boundary");
 		ckyDecoder = new CkyDecoder(pcfgRules);
 	}
 
@@ -42,6 +42,7 @@ public class DualDecompositionHmmCky {
 
 		for (int k = 0; k < 50; k++) {
 			double stepSize = 0.005;
+			// double stepSize = 1.0 / k;
 
 			// System.out.println("Iter " + k);
 			parse = ckyDecoder.decode(tokens);
@@ -54,12 +55,12 @@ public class DualDecompositionHmmCky {
 			for (int i = 0; i < tags.length; i++) {
 				if (!parseTags.get(i).equals(tags[i])) {
 					// y^k(i,t_tag) is 0, z^k(i,t_tag) is 1
-					double updatedLangTagT = Lagrangian.getLangrangian(i, tags[i]) + stepSize;
-					Lagrangian.setLangrangian(i, tags[i], updatedLangTagT);
+					double updatedLangTagT = Lagrangian.getLagrangian(i, tags[i]) + stepSize;
+					Lagrangian.setLagrangian(i, tags[i], updatedLangTagT);
 
 					// y^k(i,t_parse) is 1, z^k(i,t_parse) is 0
-					double updatedLangTagP = Lagrangian.getLangrangian(i, parseTags.get(i)) - stepSize;
-					Lagrangian.setLangrangian(i, parseTags.get(i), updatedLangTagP);
+					double updatedLangTagP = Lagrangian.getLagrangian(i, parseTags.get(i)) - stepSize;
+					Lagrangian.setLagrangian(i, parseTags.get(i), updatedLangTagP);
 
 					optimal = false;
 					// System.out.println(String.format("Different at position %d : [%s - %s]",

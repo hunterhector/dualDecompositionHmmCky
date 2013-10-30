@@ -19,8 +19,8 @@ public class HmmDecoder extends ViterbiDecoder {
 	Table<String, String, Double> logpEmit;
 	Table<String, String, Double> logpTrans;
 
-	public HmmDecoder(Table<String, String, Double> logpEmit, Table<String, String, Double> logpTrans) {
-		super(logpEmit.rowKeySet().toArray(new String[logpEmit.rowKeySet().size()]));
+	public HmmDecoder(Table<String, String, Double> logpEmit, Table<String, String, Double> logpTrans, String sentenceBoundary) {
+		super(logpEmit.rowKeySet().toArray(new String[logpEmit.rowKeySet().size()]), sentenceBoundary);
 		this.logpEmit = logpEmit;
 		this.logpTrans = logpTrans;
 	}
@@ -49,6 +49,7 @@ public class HmmDecoder extends ViterbiDecoder {
 			transLogp = logpTrans.get(previousState, currentState);
 		}
 
-		return emitLogp + transLogp - Lagrangian.getLangrangian(index, currentState);
+		return emitLogp + transLogp - Lagrangian.getLagrangian(index, currentState);
+		// return emitLogp + transLogp;
 	}
 }

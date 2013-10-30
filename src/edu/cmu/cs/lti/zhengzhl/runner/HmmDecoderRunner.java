@@ -41,7 +41,7 @@ public class HmmDecoderRunner {
 		System.out.println(String.format("%d hmm emission entries read", logpEmit.size()));
 		System.out.println(String.format("%d hmm transition entries read", logpTrans.size()));
 
-		HmmDecoder hmmDecoder = new HmmDecoder(logpEmit, logpTrans);
+		HmmDecoder hmmDecoder = new HmmDecoder(logpEmit, logpTrans, "sentence_boundary");
 
 		for (String line : InputReader.getLines(inputFile)) {
 			String[] tokens = line.split(" ");

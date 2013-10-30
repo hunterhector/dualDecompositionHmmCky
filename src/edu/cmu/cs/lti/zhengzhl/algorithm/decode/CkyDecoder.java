@@ -129,18 +129,6 @@ public class CkyDecoder {
 
 			return Parse.EMPTY_PARSE();
 		} else if (rootCell.containsKey(ROOT_NON_TERMINAL_SYMBOL)) {
-			// double maxScore = Double.NEGATIVE_INFINITY;
-			// String bestRoot = null;
-			//
-			// CkyCell ckyCell = rootCell.get(ROOT_NON_TERMINAL_SYMBOL);
-			// for (Entry<String, CkyCell> cell : rootCell.entrySet())
-			// if (cell.getKey().equals(ROOT_NON_TERMINAL_SYMBOL)) {
-			// if (cell.getValue().getMarginalLogp() > maxScore) {
-			// maxScore = cell.getValue().getMarginalLogp();
-			// bestRoot = cell.getKey();
-			// }
-			// }
-
 			Parse parse = recover(chart, ROOT_NON_TERMINAL_SYMBOL, 0, sentLength);
 			return parse;
 		} else {
@@ -194,14 +182,14 @@ public class CkyDecoder {
 			if (originalLexicalRules.containsKey(tokens[i])) {
 				for (RuleLhs lhs : originalLexicalRules.get(tokens[i])) {
 					String nt = lhs.getNonTerminal();
-					chart[i][j].put(nt, new CkyCell(i, j, tokens[i], lhs.getLogProb() + Lagrangian.getLangrangian(i, nt)));
+					chart[i][j].put(nt, new CkyCell(i, j, tokens[i], lhs.getLogProb() + Lagrangian.getLagrangian(i, nt)));
 					// System.out.println(lhs.getNonTerminal() + " " + tokens[i]
 					// + " " + i + " " + j + lhs.getLogProb());
 				}
 			} else {// deal with oov
 				// for all preterminals, we add a rule
 				for (String nt : allPreTerminals) {
-					chart[i][j].put(nt, new CkyCell(i, j, tokens[i], VERY_SMALL_LOG_PROB + Lagrangian.getLangrangian(i, nt)));
+					chart[i][j].put(nt, new CkyCell(i, j, tokens[i], VERY_SMALL_LOG_PROB + Lagrangian.getLagrangian(i, nt)));
 				}
 			}
 		}

@@ -32,11 +32,11 @@ public class DualDecoderRunner {
 	public static void main(String[] args) throws IOException {
 		File emitFile = new File("data/hw3-v1.2/hmm_emits");
 		File transFile = new File("data/hw3-v1.2/hmm_trans");
-		File inputFile = new File("data/hw3-v1.2/dev_sents");
+		File inputFile = new File("data/hw3-v1.2/test_sents");
 		File pcfg = new File("data/hw3-v1.2/pcfg");
 
-		PrintWriter tagWriter = new PrintWriter("data/hw3-v1.2/hmm_tags_dual.txt");
-		PrintWriter parseWriter = new PrintWriter("data/hw3-v1.2/parses_dual.txt");
+		PrintWriter tagWriter = new PrintWriter("data/hw3-v1.2/hmm_tags_dual_test.txt");
+		PrintWriter parseWriter = new PrintWriter("data/hw3-v1.2/parses_dual_test.txt");
 
 		Table<String, String, Double> logpEmit = ModelReader.fromFile(emitFile);
 		Table<String, String, Double> logpTrans = ModelReader.fromFile(transFile);

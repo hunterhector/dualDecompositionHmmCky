@@ -19,9 +19,12 @@ import edu.cmu.cs.lti.zhengzhl.algorithm.utils.Lagrangian;
 public abstract class ViterbiDecoder {
 
 	private String[] stateSet;
+	private String sentenceBoundary;
 
-	public ViterbiDecoder(String[] stateSet) {
+	public ViterbiDecoder(String[] stateSet, String sentenceBoundary) {
 		this.stateSet = stateSet;
+
+		this.sentenceBoundary = sentenceBoundary;
 	}
 
 	public String[] decode(String[] observations) {
@@ -34,7 +37,6 @@ public abstract class ViterbiDecoder {
 	}
 
 	private String[] recover(double[][] lattice, int[][] backPointers) {
-
 		int sentLength = lattice.length;
 
 		// initialize the seq of tags
@@ -71,13 +73,14 @@ public abstract class ViterbiDecoder {
 	private void viterbi(String[] observations, double[][] lattice, int[][] backPointers) {
 		// decode from left to right
 		for (int col = 0; col < observations.length; col++) {
+			// System.out.println("Col " + col);
 			// consider each possible state for this column
 			for (int stateIndex = 0; stateIndex < stateSet.length; stateIndex++) {
 				String currentState = stateSet[stateIndex];
 				if (col == 0) {
 					// special case for the first column
-					lattice[col][stateIndex] = getScore(observations, col, null, currentState);
-				} else {
+					lattice[col][stateIndex] = getScore(observations, col, sentenceBoundary, currentState);
+				} else if (col < observations.length) {
 					// aggregate each possible previous state using MAX
 					double maxScore = 0;
 
@@ -99,7 +102,13 @@ public abstract class ViterbiDecoder {
 					}
 					lattice[col][stateIndex] = maxScore;
 				}
+
+				// System.out.print(lattice[col][stateIndex] + "->");
+				// System.out.print(backPointers[col][stateIndex] + ",");
 			}
+			// handle sentence end
+
+			// System.out.println();
 		}
 	}
 
