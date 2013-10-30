@@ -2,6 +2,7 @@ package edu.cmu.cs.lti.zhengzhl.algorithm.decode;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -11,6 +12,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.Table.Cell;
 
+import edu.cmu.cs.lti.zhengzhl.algorithm.utils.Lagrangian;
 import edu.cmu.cs.lti.zhengzhl.model.CkyCell;
 import edu.cmu.cs.lti.zhengzhl.model.Parse;
 import edu.cmu.cs.lti.zhengzhl.model.RuleLhs;
@@ -75,14 +77,14 @@ public class CkyDecoder {
 
 	}
 
-	public Parse decode(String[] tokens, double[] langrangian) {
+	public Parse decode(String[] tokens) {
 		// initialize the chart
 		int sentLength = tokens.length;
 		initializeChart(sentLength);
 
 		// System.err.println("Sentence length is " + sentLength);
 
-		if (fillLexicalCells(tokens, langrangian)) {
+		if (fillLexicalCells(tokens)) {
 			// System.err.println("Filled with lexicals");
 			for (int width = 2; width <= sentLength; width++) {
 				for (int i = 0; i <= sentLength - width; i++) {
@@ -127,18 +129,19 @@ public class CkyDecoder {
 
 			return Parse.EMPTY_PARSE();
 		} else if (rootCell.containsKey(ROOT_NON_TERMINAL_SYMBOL)) {
-			double maxScore = Double.NEGATIVE_INFINITY;
-			String bestRoot = null;
+			// double maxScore = Double.NEGATIVE_INFINITY;
+			// String bestRoot = null;
+			//
+			// CkyCell ckyCell = rootCell.get(ROOT_NON_TERMINAL_SYMBOL);
+			// for (Entry<String, CkyCell> cell : rootCell.entrySet())
+			// if (cell.getKey().equals(ROOT_NON_TERMINAL_SYMBOL)) {
+			// if (cell.getValue().getMarginalLogp() > maxScore) {
+			// maxScore = cell.getValue().getMarginalLogp();
+			// bestRoot = cell.getKey();
+			// }
+			// }
 
-			for (Entry<String, CkyCell> cell : rootCell.entrySet())
-				if (cell.getKey().equals(ROOT_NON_TERMINAL_SYMBOL)) {
-					if (cell.getValue().getMarginalLogp() > maxScore) {
-						maxScore = cell.getValue().getMarginalLogp();
-						bestRoot = cell.getKey();
-					}
-				}
-
-			Parse parse = recover(chart, bestRoot, 0, sentLength);
+			Parse parse = recover(chart, ROOT_NON_TERMINAL_SYMBOL, 0, sentLength);
 			return parse;
 		} else {
 			System.err.println("Cannot prove root node");
@@ -162,10 +165,12 @@ public class CkyDecoder {
 			return new Parse(root, new Parse(chart[i][j].get(root).getSingleChild()));
 		} else {
 			CkyCell parent = chart[i][j].get(root);
-			// if (parent == null) {
-			// System.err.println(chart[i][j]);
-			// System.err.println("Hey!");
-			// }
+			if (parent == null) {
+				System.out.println(i + " " + j);
+				System.out.println(root);
+				// System.err.println(chart[i][j]);
+				System.err.println("Hey!");
+			}
 			Parse leftTree = recover(chart, parent.getLeftChild(), parent.getFrom(), parent.getSplitAt());
 			Parse rightTree = recover(chart, parent.getRightChild(), parent.getSplitAt(), parent.getTo());
 
@@ -183,22 +188,24 @@ public class CkyDecoder {
 		}
 	}
 
-	private boolean fillLexicalCells(String[] tokens, double[] langrangian) {
+	private boolean fillLexicalCells(String[] tokens) {
 		for (int i = 0; i < tokens.length; i++) {
 			int j = i + 1;
 			if (originalLexicalRules.containsKey(tokens[i])) {
 				for (RuleLhs lhs : originalLexicalRules.get(tokens[i])) {
-					chart[i][j].put(lhs.getNonTerminal(), new CkyCell(i, j, tokens[i], lhs.getLogProb() + langrangian[i]));
+					String nt = lhs.getNonTerminal();
+					chart[i][j].put(nt, new CkyCell(i, j, tokens[i], lhs.getLogProb() + Lagrangian.getLangrangian(i, nt)));
 					// System.out.println(lhs.getNonTerminal() + " " + tokens[i]
 					// + " " + i + " " + j + lhs.getLogProb());
 				}
 			} else {// deal with oov
 				// for all preterminals, we add a rule
 				for (String nt : allPreTerminals) {
-					chart[i][j].put(nt, new CkyCell(i, j, tokens[i], VERY_SMALL_LOG_PROB + langrangian[i]));
+					chart[i][j].put(nt, new CkyCell(i, j, tokens[i], VERY_SMALL_LOG_PROB + Lagrangian.getLangrangian(i, nt)));
 				}
 			}
 		}
 		return true; // no oov cases
 	}
+
 }

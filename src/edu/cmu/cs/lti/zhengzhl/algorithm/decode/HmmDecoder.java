@@ -3,7 +3,11 @@
  */
 package edu.cmu.cs.lti.zhengzhl.algorithm.decode;
 
+import java.util.Set;
+
 import com.google.common.collect.Table;
+
+import edu.cmu.cs.lti.zhengzhl.algorithm.utils.Lagrangian;
 
 /**
  * @author Zhengzhong Liu, Hector
@@ -16,6 +20,7 @@ public class HmmDecoder extends ViterbiDecoder {
 	Table<String, String, Double> logpTrans;
 
 	public HmmDecoder(Table<String, String, Double> logpEmit, Table<String, String, Double> logpTrans) {
+		super(logpEmit.rowKeySet().toArray(new String[logpEmit.rowKeySet().size()]));
 		this.logpEmit = logpEmit;
 		this.logpTrans = logpTrans;
 	}
@@ -44,6 +49,6 @@ public class HmmDecoder extends ViterbiDecoder {
 			transLogp = logpTrans.get(previousState, currentState);
 		}
 
-		return emitLogp + transLogp;
+		return emitLogp + transLogp - Lagrangian.getLangrangian(index, currentState);
 	}
 }

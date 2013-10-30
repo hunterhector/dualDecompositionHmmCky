@@ -4,6 +4,7 @@
 package edu.cmu.cs.lti.zhengzhl.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,6 +57,24 @@ public class Parse {
 			}
 			result += ")";
 			return result;
+		}
+	}
+
+	public List<String> getParseTags() {
+		if (isEmptyParse()) {
+			return new ArrayList<String>(0);
+		} else if (children.size() == 1) {
+			List<String> tags = Arrays.asList(root.toString());
+			return tags;
+		} else {
+			List<String> tags = new ArrayList<String>();
+
+			for (Parse child : children) {
+				if (!child.isEmptyParse()) {
+					tags.addAll(child.getParseTags());
+				}
+			}
+			return tags;
 		}
 	}
 

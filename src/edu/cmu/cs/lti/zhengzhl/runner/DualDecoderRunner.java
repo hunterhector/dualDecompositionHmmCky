@@ -13,16 +13,17 @@ import java.util.Set;
 
 import com.google.common.collect.Table;
 
+import edu.cmu.cs.lti.zhengzhl.algorithm.decode.DualDecompositionHmmCky;
 import edu.cmu.cs.lti.zhengzhl.algorithm.decode.HmmDecoder;
-import edu.cmu.cs.lti.zhengzhl.algorithm.utils.Lagrangian;
 import edu.cmu.cs.lti.zhengzhl.io.InputReader;
 import edu.cmu.cs.lti.zhengzhl.io.ModelReader;
+import edu.cmu.cs.lti.zhengzhl.model.Parse;
 
 /**
  * @author Zhengzhong Liu, Hector
  * 
  */
-public class HmmDecoderRunner {
+public class DualDecoderRunner {
 
 	/**
 	 * @param args
@@ -32,26 +33,35 @@ public class HmmDecoderRunner {
 		File emitFile = new File("data/hw3-v1.2/hmm_emits");
 		File transFile = new File("data/hw3-v1.2/hmm_trans");
 		File inputFile = new File("data/hw3-v1.2/dev_sents");
+		File pcfg = new File("data/hw3-v1.2/pcfg");
 
-		PrintWriter writer = new PrintWriter("data/hw3-v1.2/hmm_tags.txt");
+		PrintWriter tagWriter = new PrintWriter("data/hw3-v1.2/hmm_tags_dual.txt");
+		PrintWriter parseWriter = new PrintWriter("data/hw3-v1.2/parses_dual.txt");
 
 		Table<String, String, Double> logpEmit = ModelReader.fromFile(emitFile);
 		Table<String, String, Double> logpTrans = ModelReader.fromFile(transFile);
 
+		Table<String, String, Double> pcfgRules = ModelReader.fromFile(pcfg);
+
 		System.out.println(String.format("%d hmm emission entries read", logpEmit.size()));
 		System.out.println(String.format("%d hmm transition entries read", logpTrans.size()));
+		System.out.println(String.format("%d pcfg entries read", pcfgRules.size()));
 
-		HmmDecoder hmmDecoder = new HmmDecoder(logpEmit, logpTrans);
+		DualDecompositionHmmCky decoder = new DualDecompositionHmmCky(logpEmit, logpTrans, pcfgRules);
 
 		for (String line : InputReader.getLines(inputFile)) {
 			String[] tokens = line.split(" ");
-			Lagrangian.initialize(tokens.length);
-			String[] tagSeq = hmmDecoder.decode(tokens);
+			decoder.decode(tokens);
 
-			writeTags(tagSeq, writer);
+			String[] tagSeq = decoder.getTags();
+			Parse parse = decoder.getParse();
+
+			writeTags(tagSeq, tagWriter);
+			parseWriter.println(parse);
 		}
 
-		writer.close();
+		tagWriter.close();
+		parseWriter.close();
 	}
 
 	private static void writeTags(String[] tags, PrintWriter writer) {

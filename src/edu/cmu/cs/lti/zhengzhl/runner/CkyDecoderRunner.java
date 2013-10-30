@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import com.google.common.collect.Table;
 
 import edu.cmu.cs.lti.zhengzhl.algorithm.decode.CkyDecoder;
+import edu.cmu.cs.lti.zhengzhl.algorithm.utils.Lagrangian;
 import edu.cmu.cs.lti.zhengzhl.io.InputReader;
 import edu.cmu.cs.lti.zhengzhl.io.ModelReader;
 import edu.cmu.cs.lti.zhengzhl.model.Parse;
@@ -41,9 +42,8 @@ public class CkyDecoderRunner {
 
 		for (String line : InputReader.getLines(inputFile)) {
 			String[] tokens = line.split(" ");
-			double[] langrangian = new double[tokens.length];
-
-			Parse tree = decoder.decode(tokens, langrangian);
+			Lagrangian.initialize(tokens.length);
+			Parse tree = decoder.decode(tokens);
 
 			writer.println(tree);
 		}
@@ -51,7 +51,6 @@ public class CkyDecoderRunner {
 		writer.close();
 
 		final long endTime = System.currentTimeMillis();
-		System.out.println("Total execution time: " + (endTime - startTime) / 1000);
+		System.out.println("Total execution time: " + (endTime - startTime) / 1000.0);
 	}
-
 }
