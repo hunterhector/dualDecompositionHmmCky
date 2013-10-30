@@ -31,9 +31,10 @@ public class HmmDecoderRunner {
 	public static void main(String[] args) throws IOException {
 		File emitFile = new File("data/hw3-v1.2/hmm_emits");
 		File transFile = new File("data/hw3-v1.2/hmm_trans");
-		File inputFile = new File("data/hw3-v1.2/dev_sents");
 
-		PrintWriter writer = new PrintWriter("data/hw3-v1.2/hmm_tags.txt");
+		//input output
+		File inputFile = new File("data/hw3-v1.2/test_sents");
+		PrintWriter writer = new PrintWriter("data/hw3-v1.2/test-plain-postags-zhengzhl.txt");
 
 		Table<String, String, Double> logpEmit = ModelReader.fromFile(emitFile);
 		Table<String, String, Double> logpTrans = ModelReader.fromFile(transFile);

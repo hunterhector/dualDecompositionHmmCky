@@ -30,9 +30,9 @@ public class CkyDecoderRunner {
 
 		File pcfg = new File("data/hw3-v1.2/pcfg");
 
-		File inputFile = new File("data/hw3-v1.2/dev_sents");
-
-		PrintWriter writer = new PrintWriter("data/hw3-v1.2/parses.txt");
+		// input output
+		File inputFile = new File("data/hw3-v1.2/test_sents");
+		PrintWriter writer = new PrintWriter("data/hw3-v1.2/test-plain-parses-zhengzhl.txt");
 
 		Table<String, String, Double> pcfgRules = ModelReader.fromFile(pcfg);
 
@@ -51,6 +51,6 @@ public class CkyDecoderRunner {
 		writer.close();
 
 		final long endTime = System.currentTimeMillis();
-		System.out.println("Total execution time: " + (endTime - startTime) / 1000.0);
+		System.out.println("Total execution time: " + (endTime - startTime) / 1000.0 + "s");
 	}
 }
